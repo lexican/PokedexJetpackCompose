@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 //
 val primaryColor = Color(0xFF3558CD)
+val textColor = Color(0xFF161A33)
+val inactiveTabColor = Color(0xFF6B6B6B)
