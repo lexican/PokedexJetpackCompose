@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.8.3"
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,6 +67,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //Navigation
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation(libs.androidx.navigation.compose)
+
+    //Coil load network image
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
 }

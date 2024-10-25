@@ -2,9 +2,13 @@ package com.example.pokedex.ui.home
 
 import HomeTabRow
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,31 +42,41 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
     var state by remember { mutableIntStateOf(0) }
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = textColor,
-
+            Box {
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.White,
+                        titleContentColor = textColor,
                     ),
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painterResource(R.drawable.logo),
-                            contentDescription = "Pokedex Logo",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.width(24.dp),
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painterResource(R.drawable.logo),
+                                contentDescription = "Pokedex Logo",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.width(24.dp),
+                            )
+                            Spacer(modifier = Modifier.width(width = 10.dp))
+                            Text(
+                                "Pokedex",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    },
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.1f) // Adjust opacity for subtle shadow effect
                         )
-                        Spacer(modifier = Modifier.width(width = 10.dp))
-                        Text(
-                            "Pokedex",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                },
-            )
+                )
+            }
         },
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
@@ -70,12 +84,15 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
                 HomeTabRow(state = state, onClick = {
                     state = it
                 })
-                //
-                //
-                Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    text = "Text tab ${state + 1} selected",
-                )
+                
+                when (state) {
+                    0 -> PokemonGrid()
+                    1 -> Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = "Favourites",
+                    )
+                }
+
             }
         }
     }
