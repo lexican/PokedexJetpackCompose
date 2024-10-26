@@ -38,7 +38,7 @@ import com.example.pokedex.ui.theme.textColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier) {
+fun HomeScreen() {
     var state by remember { mutableIntStateOf(0) }
     Scaffold(
         topBar = {
@@ -84,7 +84,7 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
                 HomeTabRow(state = state, onClick = {
                     state = it
                 })
-                
+
                 when (state) {
                     0 -> PokemonGrid()
                     1 -> Text(
@@ -103,6 +103,6 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun HomePreview() {
     PokedexJetpackComposeTheme {
-        HomeScreen("Android")
+        HomeScreen()
     }
 }

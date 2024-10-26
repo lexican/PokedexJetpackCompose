@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -73,4 +75,27 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // Coroutine support for Retrofit
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Hilt for Dependency Injection
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+    //
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Gson for JSON parsing
+    implementation(libs.gson)
+
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

@@ -25,9 +25,7 @@ fun PokedexNavGraph() {
             SplashScreen(navController = navController)
         }
         composable(route = PokedexAppDestinations.HOME_ROUTE) {
-            HomeScreen(
-                name = "Android",
-            )
+            HomeScreen()
         }
     }
 }

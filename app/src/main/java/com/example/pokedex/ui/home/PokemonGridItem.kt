@@ -16,16 +16,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.ui.theme.inactiveTabColor
+import com.example.pokedex.utils.convertPokemonTypesToString
+import com.example.pokedex.utils.convertToIdHash
+import com.example.pokedex.utils.getPokemonImageBackgroundColor
+import java.util.Locale
 
 @Composable
-fun PokemonGridItem(pokemon: PokemonData) {
+fun PokemonGridItem(pokemon: PokemonDetails) {
     Column {
         AsyncImage(
             modifier = Modifier
                 .fillMaxSize()
-                .height(110.dp),
-            model = pokemon.imageUrl,
+                .height(110.dp)
+                .background(
+                    color = getPokemonImageBackgroundColor(
+                        pokemon.name
+                            .toString()
+                            .first()
+                            .toString()
+                    )
+                ),
+            model = pokemon.sprites?.other?.officialArtwork?.frontDefault,
             contentScale = ContentScale.Crop,
             contentDescription = "Pokemon Image"
         )
@@ -45,19 +58,22 @@ fun PokemonGridItem(pokemon: PokemonData) {
         ) {
             Column {
                 Text(
-                    text = "#001",
+                    text = convertToIdHash(pokemon.id ?: 1),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W400,
                     color = inactiveTabColor
                 )
                 Text(
-                    text = "Bulbasaur",
+                    text = pokemon.name.toString()
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W600,
                     color = Color.Black
                 )
                 Text(
-                    text = "Grass, Poison", fontSize = 12.sp, color = inactiveTabColor
+                    text = convertPokemonTypesToString(pokemon.types ?: emptyList()),
+                    fontSize = 12.sp,
+                    color = inactiveTabColor
                 )
             }
 
