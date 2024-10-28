@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -40,6 +41,8 @@ import com.example.pokedex.ui.theme.textColor
 @Composable
 fun HomeScreen() {
     var state by remember { mutableIntStateOf(0) }
+    val pokemonGridState = rememberLazyGridState() // Retain state for PokemonGrid tab
+
     Scaffold(
         topBar = {
             Box {
@@ -86,7 +89,7 @@ fun HomeScreen() {
                 })
 
                 when (state) {
-                    0 -> PokemonGrid()
+                    0 -> PokemonGrid(lazyGridState = pokemonGridState)
                     1 -> Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         text = "Favourites",
