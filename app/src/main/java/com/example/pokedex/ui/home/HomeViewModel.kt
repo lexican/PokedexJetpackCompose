@@ -1,11 +1,14 @@
 package com.example.pokedex.ui.home
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.models.ApiResponse
 import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository, @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow<Boolean>(true)
@@ -25,6 +28,7 @@ class HomeViewModel @Inject constructor(
 
     private val _hasMore = MutableStateFlow<Boolean>(true)
     private val _isError = MutableStateFlow<Boolean>(false)
+    val isError: StateFlow<Boolean> = _isError
 
 
     private val _limit = 27
@@ -50,7 +54,16 @@ class HomeViewModel @Inject constructor(
         getPokemonList(offset)
     }
 
+    fun retry() {
+        if (_pokemonListState.value.isEmpty()) {
+            loadInitialPokemonList()
+        } else {
+            loadMorePokemon();
+        }
+    }
+
     private fun getPokemonList(offset: Int) {
+
         viewModelScope.launch {
             repository.getPokemonList(_limit, offset).collect { response ->
                 when (response) {
@@ -70,6 +83,7 @@ class HomeViewModel @Inject constructor(
                         _isLoading.value = false
                         _isLoadingMore.value = false
                         //response.message
+                        Log.e("HomeViewModel", "Error ${response.message}")
                     }
                 }
             }
