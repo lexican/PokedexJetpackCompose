@@ -1,6 +1,7 @@
 package com.example.pokedex.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,24 +26,30 @@ import com.example.pokedex.utils.getPokemonImageBackgroundColor
 import java.util.Locale
 
 @Composable
-fun PokemonGridItem(pokemon: PokemonDetails) {
+fun PokemonGridItem(
+    pokemon: PokemonDetails,
+    onPokemonItemClicked: () -> Unit,
+    viewModel: HomeViewModel,
+) {
     Column {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxSize()
-                .height(110.dp)
-                .background(
-                    color = getPokemonImageBackgroundColor(
-                        pokemon.name
-                            .toString()
-                            .first()
-                            .toString()
-                    )
-                ),
+        AsyncImage(modifier = Modifier
+            .clickable {
+                viewModel.setSelectedPokemon(pokemon)
+                onPokemonItemClicked()
+            }
+            .fillMaxSize()
+            .height(110.dp)
+            .background(
+                color = getPokemonImageBackgroundColor(
+                    pokemon.name
+                        .toString()
+                        .first()
+                        .toString()
+                )
+            ),
             model = pokemon.sprites?.other?.officialArtwork?.frontDefault,
             contentScale = ContentScale.Crop,
-            contentDescription = "Pokemon Image"
-        )
+            contentDescription = "Pokemon Image")
         Box(
             modifier = Modifier
                 .background(

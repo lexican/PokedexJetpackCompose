@@ -33,13 +33,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.pokedex.R
+import com.example.pokedex.ui.PokedexAppDestinations
 import com.example.pokedex.ui.theme.PokedexJetpackComposeTheme
 import com.example.pokedex.ui.theme.textColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel) {
     var state by remember { mutableIntStateOf(0) }
     val pokemonGridState = rememberLazyGridState() // Retain state for PokemonGrid tab
 
@@ -89,7 +93,11 @@ fun HomeScreen() {
                 })
 
                 when (state) {
-                    0 -> PokemonGrid(lazyGridState = pokemonGridState)
+                    0 -> PokemonGrid(viewModel = viewModel,
+                        lazyGridState = pokemonGridState,
+                        onPokemonItemClicked = {
+                            navController.navigate(PokedexAppDestinations.POKEMON_DETAILS)
+                        })
                     1 -> Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         text = "Favourites",
@@ -104,8 +112,9 @@ fun HomeScreen() {
 
 @Preview(showBackground = true)
 @Composable
-fun HomePreview() {
+fun HomePreview(viewModel: HomeViewModel = hiltViewModel()) {
+    val navController = rememberNavController()
     PokedexJetpackComposeTheme {
-        HomeScreen()
+        HomeScreen(navController = navController, viewModel)
     }
 }

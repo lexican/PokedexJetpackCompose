@@ -28,6 +28,10 @@ class HomeViewModel @Inject constructor(
 
     private val _hasMore = MutableStateFlow<Boolean>(true)
     private val _isError = MutableStateFlow<Boolean>(false)
+
+    private val _selectedPokemon = MutableStateFlow<PokemonDetails?>(null)
+    val selectedPokemon: StateFlow<PokemonDetails?> get() = _selectedPokemon
+
     val isError: StateFlow<Boolean> = _isError
 
 
@@ -36,6 +40,10 @@ class HomeViewModel @Inject constructor(
 
     private val _pokemonListState = MutableStateFlow<List<PokemonDetails>>(emptyList())
     val pokemonListState: StateFlow<List<PokemonDetails>> = _pokemonListState
+
+    private val _favouritePokemons = MutableStateFlow(setOf<PokemonDetails>())
+    val favouritePokemons: StateFlow<Set<PokemonDetails>> = _favouritePokemons
+
 
     init {
         loadInitialPokemonList()
@@ -63,7 +71,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getPokemonList(offset: Int) {
-
         viewModelScope.launch {
             repository.getPokemonList(_limit, offset).collect { response ->
                 when (response) {
@@ -88,5 +95,35 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun toggleFavouritePokemon(pokemon: PokemonDetails?) {
+        pokemon?.let { nonNullPokemon ->
+            Log.i("HomeViewModel", "Attempting to toggle favourite: $nonNullPokemon")
+
+            // Make a mutable copy of the current favorites set
+            val currentFavourites = _favouritePokemons.value.toMutableSet()
+
+            if (_favouritePokemons.value.contains(nonNullPokemon)) {
+                Log.i("HomeViewModel", "Removing from favourites: ${nonNullPokemon.name} ${favouritePokemons.value.size}")
+                currentFavourites.remove(nonNullPokemon)  // Remove if it already exists
+            } else {
+                Log.i("HomeViewModel", "Adding to favourites: ${nonNullPokemon.name} ${favouritePokemons.value.size}")
+                currentFavourites.add(nonNullPokemon)  // Add if it doesn't exist
+            }
+
+            // Assign the updated set back to _favouritePokemons
+            _favouritePokemons.value = currentFavourites
+        } ?: Log.e("HomeViewModel", "toggleFavouritePokemon: PokemonDetails is null")
+    }
+
+
+    fun isFavorite(pokemon: PokemonDetails): Boolean {
+        val isFavourite = _favouritePokemons.value.any { it.id == pokemon.id }
+        return isFavourite
+    }
+
+    fun setSelectedPokemon(pokemon: PokemonDetails) {
+        _selectedPokemon.value = pokemon
     }
 }

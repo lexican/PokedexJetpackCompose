@@ -3,21 +3,15 @@ package com.example.pokedex.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,19 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pokedex.data.models.PokemonDetails
-import com.example.pokedex.ui.theme.PokedexJetpackComposeTheme
 import com.example.pokedex.ui.theme.backgroundColor
 
 
 @Composable
-fun PokemonGrid(viewModel: HomeViewModel = hiltViewModel(), lazyGridState: LazyGridState) {
+fun PokemonGrid(
+    viewModel: HomeViewModel,
+    lazyGridState: LazyGridState,
+    onPokemonItemClicked: () -> Unit,
+) {
     val pokemonState by viewModel.pokemonListState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val isError by viewModel.isError.collectAsState()
@@ -60,7 +52,13 @@ fun PokemonGrid(viewModel: HomeViewModel = hiltViewModel(), lazyGridState: LazyG
                 })
             }
         } else {
-            PokemonLazyVerticalGrid(isLoadingMore, pokemonState, lazyGridState)
+            PokemonLazyVerticalGrid(
+                isLoadingMore,
+                pokemonState,
+                lazyGridState,
+                onPokemonItemClicked = onPokemonItemClicked,
+                viewModel = viewModel,
+            )
         }
 
     }
@@ -71,9 +69,13 @@ fun PokemonLazyVerticalGrid(
     isLoadingMore: Boolean,
     pokemonList: List<PokemonDetails>,
     lazyGridState: LazyGridState,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel,
+    onPokemonItemClicked: () -> Unit,
 ) {
     val isError by viewModel.isError.collectAsState()
+
+    val poke by viewModel.selectedPokemon.collectAsState()
+
 
     LazyVerticalGrid(
         state = lazyGridState,
@@ -86,10 +88,14 @@ fun PokemonLazyVerticalGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(pokemonList.size) { index: Int ->
-            PokemonGridItem(pokemon = pokemonList[index])
+            PokemonGridItem(
+                pokemon = pokemonList[index],
+                onPokemonItemClicked = onPokemonItemClicked,
+                viewModel = viewModel,
+            )
         }
         if (isLoadingMore) {
-            item(span = { GridItemSpan(3) }) { // Span the indicator across two columns
+            item(span = { GridItemSpan(3) }) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -116,11 +122,13 @@ fun PokemonLazyVerticalGrid(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PokemonGridPreview() {
-    val pokemonGridState = rememberLazyGridState() // Retain state for PokemonGrid tab
-    PokedexJetpackComposeTheme {
-        PokemonGrid(lazyGridState = pokemonGridState)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PokemonGridPreview(viewModel: HomeViewModel = hiltViewModel()) {
+//    val pokemonGridState = rememberLazyGridState()
+//    PokedexJetpackComposeTheme {
+//        PokemonGrid(
+//            lazyGridState = pokemonGridState, onPokemonItemClicked = {}, viewModel = viewModel,
+//        )
+//    }
+//}

@@ -32,6 +32,12 @@ data class PokemonDetails(
     }
 
     data class Stat(
-        val title: String, val value: Int
+        @SerializedName("base_stat") val baseStat: Int,
+        val effort: Int,
+        @SerializedName("stat") val statDetail: StatDetail
+    )
+
+    data class StatDetail(
+        val name: String, val url: String
     )
 }
