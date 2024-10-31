@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -45,8 +46,8 @@ import com.example.pokedex.ui.theme.textColor
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel) {
     var state by remember { mutableIntStateOf(0) }
-    val pokemonGridState = rememberLazyGridState() // Retain state for PokemonGrid tab
-
+    val pokemonGridState = rememberLazyGridState()
+    val favouritePokemonState = viewModel.favouritePokemons.collectAsState()
     Scaffold(
         topBar = {
             Box {
@@ -88,20 +89,23 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel) {
     ) { innerPadding ->
         Surface(modifier = Modifier.padding(innerPadding)) {
             Column {
-                HomeTabRow(state = state, onClick = {
-                    state = it
-                })
-
+                HomeTabRow(
+                    state = state, onClick = {
+                        state = it
+                    }, favouriteCount = favouritePokemonState.value.size
+                )
                 when (state) {
                     0 -> PokemonGrid(viewModel = viewModel,
                         lazyGridState = pokemonGridState,
                         onPokemonItemClicked = {
                             navController.navigate(PokedexAppDestinations.POKEMON_DETAILS)
                         })
-                    1 -> Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Favourites",
-                    )
+
+                    1 -> FavouritePokemonLazyVerticalGrid(
+                        viewModel = viewModel,
+                        onPokemonItemClicked = {
+                            navController.navigate(PokedexAppDestinations.POKEMON_DETAILS)
+                        })
                 }
 
             }

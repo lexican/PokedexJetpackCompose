@@ -21,7 +21,7 @@ import com.example.pokedex.ui.theme.primaryColor
 
 
 @Composable
-fun HomeTabRow(state: Int, onClick: (state: Int) -> Unit) {
+fun HomeTabRow(state: Int, onClick: (state: Int) -> Unit, favouriteCount: Int) {
     TabRow(selectedTabIndex = state, containerColor = Color.White) {
         Tab(
             text = {
@@ -49,7 +49,7 @@ fun HomeTabRow(state: Int, onClick: (state: Int) -> Unit) {
 
                         ) {
                         Text(
-                            "0",
+                            favouriteCount.toString(),
                             fontSize = 12.sp,
                             color = Color.White,
                             textAlign = TextAlign.Center,

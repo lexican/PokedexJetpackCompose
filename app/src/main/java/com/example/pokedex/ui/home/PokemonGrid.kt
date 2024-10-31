@@ -73,10 +73,6 @@ fun PokemonLazyVerticalGrid(
     onPokemonItemClicked: () -> Unit,
 ) {
     val isError by viewModel.isError.collectAsState()
-
-    val poke by viewModel.selectedPokemon.collectAsState()
-
-
     LazyVerticalGrid(
         state = lazyGridState,
         columns = GridCells.Fixed(3),
