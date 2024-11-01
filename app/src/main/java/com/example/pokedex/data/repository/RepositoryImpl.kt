@@ -27,4 +27,18 @@ class RepositoryImpl @Inject constructor(
                 emit(ApiResponse.Error("An error occurred: ${e.localizedMessage}"))
             }
         }
+
+    override fun getSavedPokemons(savedPokemons: Set<Int>): Flow<ApiResponse<List<PokemonDetails>>> =
+        flow {
+            try {
+                val detailedPokemonList = mutableListOf<PokemonDetails>()
+                savedPokemons.forEach { pokemonId: Int ->
+                    val pokemonDetails = apiService.getPokemonDetails("https://pokeapi.co/api/v2/pokemon/${pokemonId}")
+                    detailedPokemonList.add(pokemonDetails)
+                }
+                emit(ApiResponse.Success(detailedPokemonList))
+            } catch (e: Exception) {
+                emit(ApiResponse.Error("An error occurred: ${e.localizedMessage}"))
+            }
+        }
 }

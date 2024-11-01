@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
+
 }
 
 android {
@@ -92,6 +94,12 @@ dependencies {
 
     // Gson for JSON parsing
     implementation(libs.gson)
+
+    //
+    //Room
+    implementation(libs.androidx.room.runtime)
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.ktx)
 
 }
 

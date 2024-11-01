@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.data.models.ApiResponse
 import com.example.pokedex.data.models.PokemonDetails
+import com.example.pokedex.data.repository.OfflinePokemonRepositoryImpl
 import com.example.pokedex.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository, @ApplicationContext private val context: Context
+    private val repository: Repository, @ApplicationContext private val context: Context,
+    private val offlinePokemonRepository: OfflinePokemonRepositoryImpl,
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow<Boolean>(true)
@@ -44,9 +46,9 @@ class HomeViewModel @Inject constructor(
     private val _favouritePokemons = MutableStateFlow(setOf<PokemonDetails>())
     val favouritePokemons: StateFlow<Set<PokemonDetails>> = _favouritePokemons
 
-
     init {
         loadInitialPokemonList()
+        loadPokemonFromDb()
     }
 
     private fun loadInitialPokemonList() {
@@ -55,8 +57,28 @@ class HomeViewModel @Inject constructor(
         getPokemonList(offset)
     }
 
+    private fun loadPokemonFromDb() {
+        val pokemons: MutableSet<Int> = mutableSetOf()
+        viewModelScope.launch {
+            offlinePokemonRepository.getAllPokemons().collect { savedPokes ->
+                pokemons.addAll(savedPokes.map { it.pokemonId })
+            }
+            repository.getSavedPokemons(pokemons).collect { response ->
+                when (response) {
+                    is ApiResponse.Success -> {
+                        _favouritePokemons.value = response.data.toSet()
+                    }
+
+                    is ApiResponse.Error -> {
+                        Log.e("HomeViewModel", "Error ${response.message}")
+                    }
+                }
+            }
+        }
+    }
+
     fun loadMorePokemon() {
-        if (_isLoadingMore.value || !_hasMore.value) return // Prevent duplicate loads
+        if (_isLoadingMore.value || !_hasMore.value) return
         _isLoadingMore.value = true
         _isError.value = false
         getPokemonList(offset)
@@ -89,7 +111,6 @@ class HomeViewModel @Inject constructor(
                         _isError.value = true
                         _isLoading.value = false
                         _isLoadingMore.value = false
-                        //response.message
                         Log.e("HomeViewModel", "Error ${response.message}")
                     }
                 }
@@ -99,22 +120,20 @@ class HomeViewModel @Inject constructor(
 
     fun toggleFavouritePokemon(pokemon: PokemonDetails?) {
         pokemon?.let { nonNullPokemon ->
-            Log.i("HomeViewModel", "Attempting to toggle favourite: $nonNullPokemon")
-
-            // Make a mutable copy of the current favorites set
             val currentFavourites = _favouritePokemons.value.toMutableSet()
-
             if (_favouritePokemons.value.contains(nonNullPokemon)) {
-                Log.i("HomeViewModel", "Removing from favourites: ${nonNullPokemon.name} ${favouritePokemons.value.size}")
-                currentFavourites.remove(nonNullPokemon)  // Remove if it already exists
+                currentFavourites.remove(nonNullPokemon)
+                viewModelScope.launch {
+                    pokemon.id?.let { offlinePokemonRepository.removeFavorite(it) }
+                }
             } else {
-                Log.i("HomeViewModel", "Adding to favourites: ${nonNullPokemon.name} ${favouritePokemons.value.size}")
-                currentFavourites.add(nonNullPokemon)  // Add if it doesn't exist
+                currentFavourites.add(nonNullPokemon)
+                viewModelScope.launch {
+                    pokemon.id?.let { offlinePokemonRepository.addFavorite(it) }
+                }
             }
-
-            // Assign the updated set back to _favouritePokemons
             _favouritePokemons.value = currentFavourites
-        } ?: Log.e("HomeViewModel", "toggleFavouritePokemon: PokemonDetails is null")
+        }
     }
 
 

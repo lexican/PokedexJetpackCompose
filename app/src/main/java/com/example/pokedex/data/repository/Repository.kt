@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     fun getPokemonList(limit: Int, offset: Int): Flow<ApiResponse<List<PokemonDetails>>>
+    fun getSavedPokemons(savedPokemons: Set<Int>): Flow<ApiResponse<List<PokemonDetails>>>
 }
