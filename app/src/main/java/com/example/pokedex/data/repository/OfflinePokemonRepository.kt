@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface OfflinePokemonRepository {
     suspend fun addFavorite(pokemonId: Int)
     suspend fun removeFavorite(pokemonId: Int)
-    fun getAllFavorites(): Flow<List<PokemonFavorite>>
+    fun getAllPokemons(): Flow<List<PokemonFavorite>>
 }
