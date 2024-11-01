@@ -15,3 +15,8 @@ val primaryColor = Color(0xFF3558CD)
 val textColor = Color(0xFF161A33)
 val inactiveTabColor = Color(0xFF6B6B6B)
 val backgroundColor = Color(0xFFE8E8E8)
+
+val darkPink = Color(0xffCD2873);
+val darkYellow = Color(0xffEEC218);
+val darkGreen = Color.Green;
+val darkPurple = Color(0xff161A33);

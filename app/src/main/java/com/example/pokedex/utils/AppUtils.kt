@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.pokedex.data.models.PokemonDetails
+import java.util.Locale
 
 fun convertToIdHash(id: Int): String {
     require(id >= 0) { "ID should be greater than or equal to 0" }
@@ -25,4 +26,22 @@ fun isNetworkAvailable(context: Context): Boolean {
         )
     }
     return false
+}
+
+fun calculateBMI(height: Double, weight: Double): String {
+    return String.format(Locale.US, "%.2f", weight / (height * height))
+}
+
+fun calculateAvgPower(stats: List<PokemonDetails.Stat>): Double {
+    return if (stats.isNotEmpty()) {
+        stats.map { it.baseStat }.average()
+    } else {
+        0.0
+    }
+}
+
+fun String.capitalizeAllWordsSepByDash(): String {
+    return this.split("-").joinToString("-") { word ->
+        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+    }
 }

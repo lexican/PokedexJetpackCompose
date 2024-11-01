@@ -53,7 +53,7 @@ fun PokedexNavGraph() {
             composable(route = PokedexAppDestinations.POKEMON_DETAILS) { backStackEntry ->
                 // Retrieve the ViewModel instance tied to the navigation graph
                 //val viewModel: HomeViewModel = hiltViewModel(backStackEntry)
-                PokemonDetailsScreen(viewModel = viewModel)
+                PokemonDetailsScreen(navController = navController, viewModel = viewModel)
             }
         }
     }
