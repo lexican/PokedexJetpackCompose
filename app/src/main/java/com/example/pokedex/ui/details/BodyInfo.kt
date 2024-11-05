@@ -3,6 +3,7 @@ package com.example.pokedex.ui.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ fun BodyInfo(pokemon: PokemonDetails) {
     Box(
         modifier = Modifier
             .padding(16.dp)
-            .background(Color.White)
+            .background(Color.White).fillMaxWidth()
     ) {
         Row() {
             InfoItem(title = "Height", value = pokemon.height.toString())
